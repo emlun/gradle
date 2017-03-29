@@ -101,6 +101,84 @@ gradle.taskGraph.whenReady { taskGraph ->
         </section>
     </section>
 
+    <section id="sec:using_gpg_agent">
+        <title>Using gpg-agent</title>
+        <para>
+            By default the signing plugin uses a Java-based implementation of PGP for signing. This implementation cannot
+            use the gpg-agent program for managing private keys, though. If you want to use the gpg-agent, you can change
+            the signatory implementation used by the signing plugin to
+            <apilink class="org.gradle.plugins.signing.signatory.gnupg.GnupgSignatory" />.
+        </para>
+        <sample id="use-gnupg" dir="signing/gnupg-signatory" title="Sign with GnuPG">
+            <sourcefile file="build.gradle" snippet="configure-signatory" />
+        </sample>
+        <para>
+            This tells the signing plugin to use the <literal>GnupgSignatory</literal>
+            instead of the default <apilink class="org.gradle.plugins.signing.signatory.pgp.PgpSignatory" />.
+            The <literal>GnupgSignatory</literal> relies on the gpg2 progam to sign the artifacts. Of course, this requires
+            that GnuPG is installed.
+        </para>
+        <para>
+            Without any further configuration the <literal>gpg2</literal> (on Windows: <literal>gpg2.exe</literal>)
+            executable found on the path will be used. The password is supplied by the <literal>gpg-agent</literal>
+            and the default key is used for signing.
+        </para>
+        <section id="sec:gnupg_signatory_configuration">
+            <para>
+                The GnupgSignatory supports a number of configuration options for controlling how gpg is invoked.
+                These are typically set in gradle.properties:
+            </para>
+            <sample id="configure-gnupg" dir="signing/gnupg-signatory" title="Configure the GnupgSignatory">
+                <sourcefile file="gradle.properties" snippet="user-properties" />
+            </sample>
+            <variablelist>
+                <varlistentry>
+                    <term><literal>signing.gnupg.executable</literal></term>
+                    <listitem>
+                        <para>The gpg executable that is invoked for signing. The default value of this property depends on <literal>useLegacyGpg</literal>.
+                        If this is <literal>true</literal> then the default value of executable is &quot;gpg&quot; otherwise it is &quot;gpg2&quot;.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><literal>signing.gnupg.useLegacyGpg</literal></term>
+                    <listitem>
+                        <para>Must be <literal>true</literal> if GnuPG version 1 is used and <literal>false</literal> otherwise. The default value of the
+                        property is <literal>false</literal>.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><literal>signing.gnupg.homeDir</literal></term>
+                    <listitem>
+                        <para>Sets the home directory for GnuPG. If not given the default home directory of GnuPG is used.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><literal>signing.gnupg.optionsFile</literal></term>
+                    <listitem>
+                        <para>Sets a custom options file for GnuPG. If not given GnuPG's default configuration file is used.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><literal>signing.gnupg.keyName</literal></term>
+                    <listitem>
+                        <para>The id of the key that should be used for signing. If not given then the default key configured in GnuPG will be used.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term><literal>signing.gnupg.passphrase</literal></term>
+                    <listitem>
+                        <para>The passphrase for unlocking the secret key. If not given then the gpg-agent program is used for getting the passphrase.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+            <para>
+                All configuration properties are optional.
+            </para>
+        </section>
+    </section>
+
     <section id="sec:specifying_what_to_sign">
         <title>Specifying what to sign</title>
         <para>
