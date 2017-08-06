@@ -10,9 +10,15 @@ Add-->
 ### Example new and noteworthy
 -->
 
-### Support for Play 2.6
+### Play-on-Gradle Improvements
+
+#### Support for Play 2.6
 
 TODO Placeholder
+
+#### Support for built-in Twirl template types
+
+Gradle now supports Twirl templates that use HTML, JavaScript, txt and XML.
 
 ### Support for Google Cloud Storage backed repositories
 
