@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gradle.api.internal.cache;
+package org.gradle.cache.internal;
 
 import org.gradle.api.Action;
 import org.gradle.cache.CacheRepository;
