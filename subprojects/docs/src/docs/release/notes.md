@@ -20,6 +20,10 @@ TODO Placeholder
 
 Gradle now supports Twirl templates that use HTML, JavaScript, txt and XML.
 
+#### Support for custom Twirl template formats
+
+The `TwirlCompile` task can now be configured to use special custom template formats.
+
 ### Support for Google Cloud Storage backed repositories
 
 It is now possible to consume dependencies from, and publish to, [Google Cloud Storage](https://cloud.google.com/storage/) buckets when using [`MavenArtifactRepository`](dsl/org.gradle.api.artifacts.repositories.MavenArtifactRepository.html) or [`IvyArtifactRepository`](dsl/org.gradle.api.artifacts.repositories.IvyArtifactRepository.html).
