@@ -20,22 +20,6 @@ import spock.lang.Specification
 
 class GnupgSignatorySpec extends Specification {
 
-  def 'Constructor requires a nonempty keyName.'() {
-    when:
-    new GnupgSignatory(Mock(Project), null, Mock(GnupgSettings))
-
-    then:
-    thrown(IllegalArgumentException)
-
-    when:
-    new GnupgSignatory(Mock(Project), null, Mock(GnupgSettings) {
-        getKeyName() >> ""
-    })
-
-    then:
-    thrown(IllegalArgumentException)
-  }
-
   def 'getInputProperty() returns the keyName.'() {
     when:
     def signatory = new GnupgSignatory(Mock(Project), null, Mock(GnupgSettings) {
@@ -43,7 +27,7 @@ class GnupgSignatorySpec extends Specification {
     })
 
     then:
-    signatory.name == 'C001C0DE'
+    signatory.inputProperty == 'C001C0DE'
   }
 
 }

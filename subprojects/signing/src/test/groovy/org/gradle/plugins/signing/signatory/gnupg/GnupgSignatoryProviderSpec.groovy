@@ -16,23 +16,36 @@
 package org.gradle.plugins.signing.signatory.gnupg
 
 import org.gradle.api.Project
+import org.gradle.plugins.signing.SigningExtension
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class GnupgSignatoryProviderSpec extends Specification {
 
-  def 'The default Signatory gets its keyName from the signing.keyId project property.'() {
+  public static final String KEY_ID = 'C001C0DE'
+
+  def 'The default Signatory gets its keyName from the signing.gnupg.keyName project property.'() {
     setup:
     Project project = ProjectBuilder.builder().build()
-    project.ext.'signing.keyId' = 'C001C0DE'
+    project.ext.'signing.gnupg.keyName' = KEY_ID
 
     expect:
-    new GnupgSignatoryProvider().getDefaultSignatory(project).keyName == 'C001C0DE'
+    new GnupgSignatoryProvider().getDefaultSignatory(project).keyName == KEY_ID
   }
 
-  def 'Named signatories use the given name as the keyId.'() {
+  def 'Named signatories get the keyName from a config setting prefix with the signatory name.'() {
+    setup:
+
+    Project project = ProjectBuilder.builder().build()
+    project.ext.'signing.gnupg.superspecialawesomekey.keyName' = KEY_ID
+
+    def provider = new GnupgSignatoryProvider()
+    provider.configure(new SigningExtension(project)) {
+      superspecialawesomekey()
+    }
+
     expect:
-    new GnupgSignatoryProvider().getSignatory('C001C0DE').keyName == 'C001C0DE'
+    provider.getSignatory('superspecialawesomekey').keyName == KEY_ID
   }
 
 }
