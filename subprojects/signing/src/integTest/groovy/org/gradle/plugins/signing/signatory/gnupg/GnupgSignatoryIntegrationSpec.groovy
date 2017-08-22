@@ -25,7 +25,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-class GnupgSignatoryIT extends Specification {
+class GnupgSignatoryIntegrationSpec extends Specification {
 
   private static final String KEY_ID = "test@test.org"
 
