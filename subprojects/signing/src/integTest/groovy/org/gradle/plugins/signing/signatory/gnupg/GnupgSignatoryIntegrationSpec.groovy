@@ -17,9 +17,6 @@ package org.gradle.plugins.signing.signatory.gnupg
 
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
-import org.gradle.plugins.signing.signatory.Signatory
-import org.gradle.plugins.signing.signatory.gnupg.GnupgSettings
-import org.gradle.plugins.signing.signatory.gnupg.GnupgSignatory
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -52,7 +49,7 @@ class GnupgSignatoryIntegrationSpec extends Specification {
     gpgProcess.waitFor()
   }
 
-  def 'Signature is written correctly.'() {
+  def 'The written signature is valid.'() {
     setup:
     Project project = ProjectBuilder.builder().build()
 
@@ -61,29 +58,31 @@ class GnupgSignatoryIntegrationSpec extends Specification {
 
     GnupgSettings settings = new GnupgSettings().with {
         homeDir = gnupgHome
-        keyName = "test@test.org"
+        keyName = KEY_ID
         return it
     }
-
-    Signatory gpgSignatory = new GnupgSignatory(project, null, settings);
 
     OutputStream signatureStream = new FileOutputStream(signatureFile)
 
     when:
-    gpgSignatory.sign(getClass().getResourceAsStream("/payload.txt"), signatureStream)
+    new GnupgSignatory(project, null, settings).sign(payload.openStream(), signatureStream)
 
-    ProcessBuilder gpgProcessBuilder = new ProcessBuilder("gpg", "--verify", signatureFile.getAbsolutePath(), payload.getPath())
-      .redirectErrorStream(true)
+    InputStream gpgOutputInputStream = new PipedInputStream()
+    OutputStream gpgOutputStream = new PipedOutputStream(gpgOutputInputStream)
+    project.exec {
+        executable "gpg"
+        args(
+            "--homedir", gnupgHome.absolutePath,
+            "--verify", signatureFile.getAbsolutePath(), payload.getPath()
+        )
+        standardOutput = gpgOutputStream
+        errorOutput = gpgOutputStream
+    }
 
-    gpgProcessBuilder.environment().put("GNUPGHOME", gnupgHome.absolutePath)
-
-    Process gpgProcess = gpgProcessBuilder.start()
-    gpgProcess.waitFor()
-
-    String gpgOutput = IOUtils.toString(gpgProcess.getInputStream(), "UTF-8")
+    String gpgOutput = IOUtils.toString(gpgOutputInputStream, "UTF-8")
 
     then:
-    gpgOutput.contains('Good signature from "Test Testsson <test@test.org>"')
+    gpgOutput.contains('Good signature from "Test Testsson <' + KEY_ID + '>"')
   }
 
 }
