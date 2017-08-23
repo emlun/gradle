@@ -22,30 +22,30 @@ import spock.lang.Specification
 
 class GnupgSignatoryProviderSpec extends Specification {
 
-  public static final String KEY_ID = 'C001C0DE'
+    public static final String KEY_ID = 'C001C0DE'
 
-  def 'The default Signatory gets its keyName from the signing.gnupg.keyName project property.'() {
-    setup:
-    Project project = ProjectBuilder.builder().build()
-    project.ext.'signing.gnupg.keyName' = KEY_ID
+    def 'The default Signatory gets its keyName from the signing.gnupg.keyName project property.'() {
+        setup:
+        Project project = ProjectBuilder.builder().build()
+        project.ext.'signing.gnupg.keyName' = KEY_ID
 
-    expect:
-    new GnupgSignatoryProvider().getDefaultSignatory(project).keyName == KEY_ID
-  }
-
-  def 'Named signatories get the keyName from a config setting prefix with the signatory name.'() {
-    setup:
-
-    Project project = ProjectBuilder.builder().build()
-    project.ext.'signing.gnupg.superspecialawesomekey.keyName' = KEY_ID
-
-    def provider = new GnupgSignatoryProvider()
-    provider.configure(new SigningExtension(project)) {
-      superspecialawesomekey()
+        expect:
+        new GnupgSignatoryProvider().getDefaultSignatory(project).keyName == KEY_ID
     }
 
-    expect:
-    provider.getSignatory('superspecialawesomekey').keyName == KEY_ID
-  }
+    def 'Named signatories get the keyName from a config setting prefix with the signatory name.'() {
+        setup:
+
+        Project project = ProjectBuilder.builder().build()
+        project.ext.'signing.gnupg.superspecialawesomekey.keyName' = KEY_ID
+
+        def provider = new GnupgSignatoryProvider()
+        provider.configure(new SigningExtension(project)) {
+          superspecialawesomekey()
+        }
+
+        expect:
+        provider.getSignatory('superspecialawesomekey').keyName == KEY_ID
+    }
 
 }

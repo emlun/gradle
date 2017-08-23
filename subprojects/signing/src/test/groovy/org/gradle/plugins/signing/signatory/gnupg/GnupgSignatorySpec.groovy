@@ -20,14 +20,14 @@ import spock.lang.Specification
 
 class GnupgSignatorySpec extends Specification {
 
-  def 'getInputProperty() returns the keyName.'() {
-    when:
-    def signatory = new GnupgSignatory(Mock(Project), null, Mock(GnupgSettings) {
-        getKeyName() >> 'C001C0DE'
-    })
+    def 'getInputProperty() returns the keyName.'() {
+        when:
+        def signatory = new GnupgSignatory(Mock(Project), null, Mock(GnupgSettings) {
+            getKeyName() >> 'C001C0DE'
+        })
 
-    then:
-    signatory.inputProperty == 'C001C0DE'
-  }
+        then:
+        signatory.inputProperty == 'C001C0DE'
+    }
 
 }
