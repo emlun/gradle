@@ -85,7 +85,7 @@ class SigningSamplesSpec extends AbstractIntegrationSpec {
         String gpgOutput = IOUtils.toString(gpgOutputInputStream, "UTF-8")
 
         then:
-        file("signing", "gnupg-signatory", "build", "libs", "gnupg-signatory-1.0.jar.asc").text
+        file("signing", "gnupg-signatory", "build", "libs", "gnupg-signatory-1.0.jar.asc").exists()
         gpgOutput.contains('Gradle Test (This is used for testing the gradle-signing-plugin) <test@gradle.org>')
     }
 
