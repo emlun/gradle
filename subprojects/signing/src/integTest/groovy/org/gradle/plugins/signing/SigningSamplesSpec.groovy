@@ -16,11 +16,13 @@
 
 package org.gradle.plugins.signing
 
+import org.apache.commons.io.IOUtils
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.integtests.fixtures.Sample
 import org.gradle.integtests.fixtures.UsesSample
 import org.gradle.integtests.fixtures.executer.GradleContextualExecuter
 import org.gradle.test.fixtures.maven.MavenFileRepository
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import spock.lang.IgnoreIf
 
@@ -61,15 +63,30 @@ class SigningSamplesSpec extends AbstractIntegrationSpec {
     }
 
     @UsesSample('signing/gnupg-signatory')
-    def "use gnupg signatory"() {
+    def "using gnupg signatory generates valid signatures"() {
         given:
         sample mavenSample
 
         when:
         run "signArchives"
 
+        InputStream gpgOutputInputStream = new PipedInputStream()
+        OutputStream gpgOutputStream = new PipedOutputStream(gpgOutputInputStream)
+        ProjectBuilder.builder().build().exec {
+            executable "gpg"
+            args(
+                "--homedir", mavenSample.dir.file('gnupg-home').absolutePath,
+                "--verify", file("signing", "gnupg-signatory", "build", "libs", "gnupg-signatory-1.0.jar.asc").absolutePath
+            )
+            standardOutput = gpgOutputStream
+            errorOutput = gpgOutputStream
+        }
+
+        String gpgOutput = IOUtils.toString(gpgOutputInputStream, "UTF-8")
+
         then:
         file("signing", "gnupg-signatory", "build", "libs", "gnupg-signatory-1.0.jar.asc").text
+        gpgOutput.contains('Gradle Test (This is used for testing the gradle-signing-plugin) <test@gradle.org>')
     }
 
     MavenFileRepository getRepo() {
